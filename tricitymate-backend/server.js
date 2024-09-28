@@ -5,6 +5,7 @@ import connectDB from "./config/db.js";
 import userRoutes from "./routes/userRoutes.js";
 import watchlistRoutes from "./routes/watchlistRoutes.js"; // Import watchlist routes
 import reviewRoutes from "./routes/reviewRoutes.js";
+import placeRoutes from "./routes/placeRoutes.js";
 
 dotenv.config();
 connectDB();
@@ -17,6 +18,7 @@ app.use(cors());
 app.use("/api/users", userRoutes);
 app.use("/api/watchlist", watchlistRoutes); // Use watchlist routes here
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/places", placeRoutes);
 
 app.get("/", (req, res) => {
   res.send("API is running...");

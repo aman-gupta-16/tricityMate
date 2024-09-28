@@ -8,7 +8,7 @@ const generateToken = (id) => {
 
 // Register a new user
 export const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role } = req.body;
 
   try {
     // Check if user already exists
@@ -22,11 +22,13 @@ export const registerUser = async (req, res) => {
       name,
       email,
       password, // Password will be hashed in the User model
+      role,
     });
 
     // Send back the token and user data
     res.status(201).json({
       _id: user._id,
+      role: user.role,
       name: user.name,
       email: user.email,
       token: generateToken(user._id),
@@ -49,6 +51,7 @@ export const loginUser = async (req, res) => {
       res.json({
         _id: user._id,
         name: user.name,
+        role: user.role,
         email: user.email,
         token: generateToken(user._id),
       });

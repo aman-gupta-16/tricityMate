@@ -3,7 +3,7 @@ import Place from "../models/placeModel.js";
 
 // Add a review and rating for a place
 export const addReview = async (req, res) => {
-  const { placeId, rating, reviewText } = req.body;
+  const { placeId, rating, comment } = req.body;
   const userId = req.user._id;
 
   try {
@@ -12,57 +12,27 @@ export const addReview = async (req, res) => {
       return res.status(404).json({ message: "Place not found" });
     }
 
-    const existingReview = await Review.findOne({
-      user: userId,
-      place: placeId,
-    });
-    if (existingReview) {
-      return res
-        .status(400)
-        .json({ message: "You have already reviewed this place" });
-    }
-
+    // Add the review
     const review = await Review.create({
       user: userId,
       place: placeId,
       rating,
-      reviewText,
+      comment,
     });
 
-    res.status(201).json({ message: "Review added", review });
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
+    // Add the review to the place's reviews array
+    place.reviews.push(review._id);
 
-// Get all reviews for a place
-export const getReviewsForPlace = async (req, res) => {
-  const { placeId } = req.params;
-
-  try {
-    const reviews = await Review.find({ place: placeId }).populate(
-      "user",
-      "name"
-    );
-    res.json(reviews);
-  } catch (error) {
-    res.status(500).json({ message: "Server error", error: error.message });
-  }
-};
-
-// Get average rating for a place
-export const getAverageRating = async (req, res) => {
-  const { placeId } = req.params;
-
-  try {
+    // Update average rating and number of reviews
     const reviews = await Review.find({ place: placeId });
-    if (reviews.length === 0) {
-      return res.json({ averageRating: 0 });
-    }
+    const avgRating =
+      reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
 
-    const averageRating =
-      reviews.reduce((acc, review) => acc + review.rating, 0) / reviews.length;
-    res.json({ averageRating });
+    place.averageRating = avgRating;
+
+    await place.save();
+
+    res.status(201).json({ message: "Review added", review });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -79,6 +49,41 @@ export const getUserReviews = async (req, res) => {
       "name"
     );
     res.json(reviews);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Edit a review
+export const editReview = async (req, res) => {
+  const { reviewId } = req.params; // Review ID from the request parameters
+  const { rating, comment } = req.body; // New rating and comment from request body
+  const userId = req.user._id; // User ID from the protected route middleware
+
+  try {
+    // Find the review by ID
+    const review = await Review.findById(reviewId);
+
+    // Check if the review exists
+    if (!review) {
+      return res.status(404).json({ message: "Review not found" });
+    }
+
+    // Check if the review belongs to the logged-in user
+    if (review.user.toString() !== userId.toString()) {
+      return res
+        .status(403)
+        .json({ message: "Unauthorized: You can only edit your own review" });
+    }
+
+    // Update the review fields
+    review.rating = rating || review.rating;
+    review.comment = comment || review.comment;
+
+    // Save the updated review
+    const updatedReview = await review.save();
+
+    res.status(200).json({ message: "Review updated", updatedReview });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

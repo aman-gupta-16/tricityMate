@@ -45,12 +45,10 @@ export const removeFromWatchlist = async (req, res) => {
     user.watchlist = user.watchlist.filter((id) => id.toString() !== placeId);
     await user.save();
 
-    res
-      .status(200)
-      .json({
-        message: "Place removed from watchlist",
-        watchlist: user.watchlist,
-      });
+    res.status(200).json({
+      message: "Place removed from watchlist",
+      watchlist: user.watchlist,
+    });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -63,8 +61,12 @@ export const getWatchlist = async (req, res) => {
   try {
     const user = await User.findById(userId).populate(
       "watchlist",
-      "name description"
+      "name description imageUrl" // Include other fields like imageUrl if necessary
     );
+
+    if (!user || !user.watchlist) {
+      return res.status(404).json({ message: "Watchlist not found" });
+    }
 
     res.json(user.watchlist);
   } catch (error) {

@@ -1,3 +1,5 @@
+import cloudinary from "../config/cloudinary.js";
+import getDataUri from "../config/dataUri.js";
 import Place from "../models/placeModel.js";
 
 export const addPlace = async (req, res) => {
@@ -6,25 +8,35 @@ export const addPlace = async (req, res) => {
     description,
     category,
     location,
-    images,
     entryFee,
     openingHours,
     closingHours,
     daysOfOperation,
   } = req.body;
 
+  const file = req.file;
+
+  if (!file) {
+    return res.status(400).json({ message: "No file uploaded." });
+  }
+
   try {
+    const fileUri = getDataUri(file);
+    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+
     const newPlace = new Place({
       name,
       description,
       category,
       location,
-      images,
       entryFee,
       openingHours,
       closingHours,
       daysOfOperation,
+      images: [cloudResponse.secure_url], // Store as an array of strings
+      averageRating: 0, // Set a default rating if applicable
     });
+
     await newPlace.save();
     res.status(201).json(newPlace);
   } catch (error) {

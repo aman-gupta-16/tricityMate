@@ -14,15 +14,21 @@ export const addPlace = async (req, res) => {
     daysOfOperation,
   } = req.body;
 
-  const file = req.file;
+  const files = req.files; // Use req.files for multiple files
 
-  if (!file) {
-    return res.status(400).json({ message: "No file uploaded." });
+  if (!files || files.length === 0) {
+    return res.status(400).json({ message: "No files uploaded." }); // Check if files array is empty
   }
 
   try {
-    const fileUri = getDataUri(file);
-    const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+    const imageUrls = []; // To hold uploaded image URLs
+
+    // Loop through each file and upload
+    for (let file of files) {
+      const fileUri = getDataUri(file);
+      const cloudResponse = await cloudinary.uploader.upload(fileUri.content);
+      imageUrls.push(cloudResponse.secure_url); // Collect the URLs
+    }
 
     const newPlace = new Place({
       name,
@@ -33,7 +39,7 @@ export const addPlace = async (req, res) => {
       openingHours,
       closingHours,
       daysOfOperation,
-      images: [cloudResponse.secure_url], // Store as an array of strings
+      images: imageUrls, // Store as an array of strings
       averageRating: 0, // Set a default rating if applicable
     });
 

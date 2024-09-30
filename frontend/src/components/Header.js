@@ -11,10 +11,18 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import { useAuth } from "@/context/AuthContext"; // Import the useAuth hook
+import { useRouter } from "next/navigation";
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false); // This should be managed by your auth system
+  const { user, isLoggedIn, logout } = useAuth();
+  const router = useRouter();
+
+  const handleLogout = () => {
+    logout(); // Call the logout function from context
+    router.push("/");
+  };
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -25,7 +33,10 @@ const Header = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <Avatar className="cursor-pointer">
-          <AvatarImage src="https://github.com/shadcn.png" alt="@shadcn" />
+          <AvatarImage
+            src={user?.avatar || "https://github.com/shadcn.png"}
+            alt={user?.name || "User Avatar"}
+          />
           <AvatarFallback>CN</AvatarFallback>
         </Avatar>
       </DropdownMenuTrigger>
@@ -34,7 +45,10 @@ const Header = () => {
           <User className="mr-2 h-4 w-4" />
           <span>Your Profile</span>
         </DropdownMenuItem>
-        {/* Add more menu items as needed */}
+        <DropdownMenuItem onClick={handleLogout}>
+          <User className="mr-2 h-4 w-4" />
+          <span>Logout</span>
+        </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
   );
@@ -78,7 +92,7 @@ const Header = () => {
             ) : (
               <>
                 <Link href="/login">
-                  <Button className=" hover:bg-slate-700">Sign In</Button>
+                  <Button className="hover:bg-slate-700">Sign In</Button>
                 </Link>
 
                 <Link href="/register">
@@ -120,12 +134,20 @@ const Header = () => {
               </Link>
             ))}
             {isLoggedIn ? (
-              <Link
-                href="/profile"
-                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-slate-700"
-              >
-                Your Profile
-              </Link>
+              <>
+                <Link
+                  href="/profile"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-slate-700"
+                >
+                  Your Profile
+                </Link>
+                <Button
+                  onClick={handleLogout}
+                  className="block px-3 py-2 rounded-md text-base font-medium text-white bg-slate-900  hover:bg-slate-700"
+                >
+                  Logout
+                </Button>
+              </>
             ) : (
               <div className="mt-4 space-y-2">
                 <Link href="/login">

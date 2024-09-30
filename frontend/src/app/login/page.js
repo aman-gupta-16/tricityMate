@@ -4,15 +4,17 @@ import React, { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Link from "next/link";
-import axios from "axios"; // Import Axios
-import { useRouter } from "next/navigation"; // Use Next.js router for redirection
+import axios from "axios";
+import { useRouter } from "next/navigation";
 import { USER_END_POINT } from "@/lib/constant";
+import { useAuth } from "@/context/AuthContext";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const router = useRouter();
+  const { login } = useAuth();
 
   const handleEmailChange = (e) => {
     setEmail(e.target.value);
@@ -30,7 +32,7 @@ const LoginPage = () => {
         email,
         password,
       });
-      localStorage.setItem("authToken", data.token);
+      login(data);
 
       // If login is successful, redirect to the dashboard or home
       router.push("/profile");

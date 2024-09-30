@@ -1,5 +1,6 @@
 import Header from "@/components/Header";
 import "./globals.css";
+import { AuthProvider } from "@/context/AuthContext.js";
 
 export const metadata = {
   title: "TricityMate",
@@ -10,8 +11,10 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" className="dark">
       <body>
-        <Header />
-        {children}
+        <AuthProvider>
+          <Header />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

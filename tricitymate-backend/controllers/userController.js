@@ -63,6 +63,8 @@ export const loginUser = async (req, res) => {
   }
 };
 
+//Logout
+
 // Get user profile - Protected route
 export const getUserProfile = async (req, res) => {
   try {

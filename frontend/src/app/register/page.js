@@ -9,6 +9,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import axios from "axios"; // Import Axios
 import { useRouter } from "next/navigation"; // Using router for redirection after successful registration
 import { USER_END_POINT } from "@/lib/constant";
+import { toast } from "react-toastify";
 
 const RegisterPage = () => {
   const [name, setName] = useState("");
@@ -32,6 +33,7 @@ const RegisterPage = () => {
       if (response.status === 201) {
         // If registration is successful, you can redirect the user to the login page
         router.push("/login");
+        toast.success("successfully registered");
       }
     } catch (error) {
       // Handle error (e.g., user already exists, validation failed, etc.)

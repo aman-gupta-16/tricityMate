@@ -61,7 +61,7 @@ export const getWatchlist = async (req, res) => {
   try {
     const user = await User.findById(userId).populate(
       "watchlist",
-      "name description imageUrl" // Include other fields like imageUrl if necessary
+      "name description images" // Include other fields like imageUrl if necessary
     );
 
     if (!user || !user.watchlist) {

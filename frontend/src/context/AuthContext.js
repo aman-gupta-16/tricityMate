@@ -1,32 +1,35 @@
-// context/AuthContext.js
 "use client";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [user, setUser] = useState(() => {
+    const storedUser = JSON.parse(localStorage.getItem("user"));
+    return storedUser || null; // Default to null if not found
+  });
+
+  const token = localStorage.getItem("token");
+  const [isLoggedIn, setIsLoggedIn] = useState(!!token);
 
   useEffect(() => {
-    const storedUser = localStorage.getItem("user");
-    const token = localStorage.getItem("token");
-
-    if (storedUser && token) {
-      setUser(JSON.parse(storedUser));
+    if (user && token) {
       setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
     }
-  }, []);
+  }, [user, token]);
 
   const login = (userDetails) => {
-    localStorage.setItem("token", userDetails.token); // assuming userDetails contains a token
+    localStorage.setItem("token", userDetails.token); // Store token
+    localStorage.setItem("user", JSON.stringify(userDetails)); // Store user as string
     setUser(userDetails);
     setIsLoggedIn(true);
-    console.log(userDetails);
   };
 
   const logout = () => {
     localStorage.removeItem("token");
+    localStorage.removeItem("user"); // Clear user data
     setUser(null);
     setIsLoggedIn(false);
   };

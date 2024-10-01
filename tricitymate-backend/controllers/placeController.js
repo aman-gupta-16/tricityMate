@@ -132,6 +132,7 @@ export const getPlaceDetails = async (req, res) => {
 };
 
 // Edit an existing place
+
 export const editPlace = async (req, res) => {
   const { placeId } = req.params; // Get placeId from request parameters
   const {
@@ -143,7 +144,6 @@ export const editPlace = async (req, res) => {
     openingHours,
     closingHours,
     daysOfOperation,
-    images,
   } = req.body; // Get updated place details from request body
 
   try {
@@ -154,7 +154,13 @@ export const editPlace = async (req, res) => {
       return res.status(404).json({ message: "Place not found" });
     }
 
-    // Update place fields with new data
+    // Handle uploaded images if any
+    if (req.files && req.files.length > 0) {
+      const uploadedImages = req.files.map((file) => file.path); // Assuming multer provides file path
+      place.images = uploadedImages; // Replace old images with new ones
+    }
+
+    // Update place fields with new data, retaining old values if fields are not changed
     place.name = name || place.name;
     place.description = description || place.description;
     place.location = location || place.location;
@@ -163,13 +169,13 @@ export const editPlace = async (req, res) => {
     place.openingHours = openingHours || place.openingHours;
     place.closingHours = closingHours || place.closingHours;
     place.daysOfOperation = daysOfOperation || place.daysOfOperation;
-    place.images = images || place.images;
 
     // Save the updated place
     await place.save();
 
     res.status(200).json({ message: "Place updated successfully", place });
   } catch (error) {
+    console.error("Error updating place:", error); // Log error for debugging
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };

@@ -6,6 +6,7 @@ import { USER_END_POINT, WATCHLIST_END_POINT } from "@/lib/constant";
 import { Card } from "@/components/ui/card"; // Example import for UI components
 import { Button } from "@/components/ui/button"; // Example import for UI components
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
 
 const DashboardPage = () => {
   const [userData, setUserData] = useState(null);
@@ -17,28 +18,29 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (!user) {
-      router.back();
-      return;
+      toast.error("You must be logged in");
+      router.replace("/login");
     } else {
-      const fetchUserData = async () => {
-        setLoading(true);
-        try {
-          const { data: user } = await axios.get(`${USER_END_POINT}/profile`);
-          setUserData(user);
-
-          // Fetch user's watchlist
-          const watchlistResponse = await axios.get(`${WATCHLIST_END_POINT}`);
-          setPlaces(watchlistResponse.data);
-        } catch (error) {
-          setError("Error fetching user data");
-          console.error("Error fetching user data", error);
-        } finally {
-          setLoading(false);
-        }
-      };
       fetchUserData();
     }
-  }, []);
+  }, [user, router]);
+
+  const fetchUserData = async () => {
+    setLoading(true);
+    try {
+      const { data: user } = await axios.get(`${USER_END_POINT}/profile`);
+      setUserData(user);
+
+      // Fetch user's watchlist
+      const watchlistResponse = await axios.get(`${WATCHLIST_END_POINT}`);
+      setPlaces(watchlistResponse.data);
+    } catch (error) {
+      setError("Error fetching user data");
+      console.error("Error fetching user data", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleViewDetails = (id) => {
     // Redirect to the details page for the specific place
@@ -92,7 +94,7 @@ const DashboardPage = () => {
                 className="p-4 shadow-md rounded-lg transition-transform transform hover:scale-105"
               >
                 <img
-                  src={place.images}
+                  src={place.images[0]}
                   alt={place.name}
                   className="w-full h-48 object-cover rounded-md"
                 />{" "}

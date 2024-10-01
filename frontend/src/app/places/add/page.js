@@ -1,10 +1,11 @@
 "use client";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "@/utils/api"; // Axios setup with token interceptor
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { toast } from "react-toastify";
 import {
   Card,
   CardHeader,
@@ -13,8 +14,21 @@ import {
   CardFooter,
 } from "@/components/ui/card";
 import { PLACES_END_POINT } from "@/lib/constant";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 const AddPlace = () => {
+  const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const { user } = useAuth();
+
+  useEffect(() => {
+    if (!user || user.role !== "admin") {
+      router.replace("/login");
+      toast.error("unauthorized user");
+    }
+  }, [user]);
+
   const [formData, setFormData] = useState({
     name: "",
     description: "",
@@ -37,6 +51,7 @@ const AddPlace = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true); // Start loading
 
     // Prepare form data
     const data = new FormData();
@@ -50,15 +65,18 @@ const AddPlace = () => {
     data.append("daysOfOperation", formData.daysOfOperation);
 
     // Append all files to FormData
-    files.forEach((file) => {
-      data.append("files[]", file); // Use files[] to match the multer configuration
-    });
+    for (let i = 0; i < files.length; i++) {
+      data.append("files", files[i]);
+    }
 
     try {
       const response = await axios.post(`${PLACES_END_POINT}/add`, data);
-      console.log("Place added successfully:", response.data);
+      setLoading(false); // End loading
+      router.push("/places");
+      toast.success("Place added successfully!"); // Success toast
     } catch (error) {
-      console.error("Error adding place:", error);
+      setLoading(false); // End loading on error
+      toast.error("Error adding place!"); // Error toast
     }
   };
 
@@ -181,7 +199,10 @@ const AddPlace = () => {
           </form>
         </CardContent>
         <CardFooter className="flex justify-end">
-          <Button onClick={handleSubmit}>Add Place</Button>
+          <Button onClick={handleSubmit} disabled={loading}>
+            {loading ? "Adding Place..." : "Add Place"}{" "}
+            {/* Button text changes based on loading state */}
+          </Button>
         </CardFooter>
       </Card>
     </div>

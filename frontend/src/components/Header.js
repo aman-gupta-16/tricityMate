@@ -43,7 +43,9 @@ const Header = () => {
       <DropdownMenuContent className="w-56" align="end">
         <DropdownMenuItem>
           <User className="mr-2 h-4 w-4" />
-          <span>Your Profile</span>
+          <Link href="/profile">
+            <span>Your Profile</span>
+          </Link>
         </DropdownMenuItem>
         <DropdownMenuItem onClick={handleLogout}>
           <User className="mr-2 h-4 w-4" />
@@ -106,7 +108,7 @@ const Header = () => {
 
           {/* Mobile menu button */}
           <div className="md:hidden flex items-center">
-            <button
+            <Button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="inline-flex items-center justify-center p-2 rounded-md text-white hover:bg-slate-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-white"
             >
@@ -115,7 +117,7 @@ const Header = () => {
               ) : (
                 <Menu className="block h-6 w-6" aria-hidden="true" />
               )}
-            </button>
+            </Button>
           </div>
         </div>
       </div>

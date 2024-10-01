@@ -8,6 +8,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { USER_END_POINT } from "@/lib/constant";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "react-toastify";
 
 const LoginPage = () => {
   const [email, setEmail] = useState("");
@@ -36,6 +37,7 @@ const LoginPage = () => {
 
       // If login is successful, redirect to the dashboard or home
       router.push("/profile");
+      toast.success("welcome back");
     } catch (error) {
       // Handle errors (e.g., incorrect credentials)
       setError(

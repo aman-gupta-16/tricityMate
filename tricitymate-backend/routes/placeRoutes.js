@@ -15,6 +15,6 @@ const router = express.Router();
 router.post("/add", protect, admin, multipleUpload, addPlace);
 router.get("/", getAllPlaces);
 router.get("/:placeId", getPlaceDetails);
-router.put("/:placeId", protect, admin, editPlace);
+router.put("/:placeId", protect, admin, multipleUpload, editPlace);
 
 export default router;

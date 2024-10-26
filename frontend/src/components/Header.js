@@ -1,4 +1,5 @@
 "use client";
+
 import React, { useState } from "react";
 import Link from "next/link";
 import { Search, Menu, X, User } from "lucide-react";
@@ -89,6 +90,14 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
+            {/* Show "Add Places" button if the user is an admin */}
+            {isLoggedIn && user?.role === "admin" && (
+              <Link href="/places/add">
+                <Button className="bg-green-600 text-white hover:bg-green-700">
+                  Add Places
+                </Button>
+              </Link>
+            )}
             {isLoggedIn ? (
               <ProfileMenu />
             ) : (
@@ -135,6 +144,14 @@ const Header = () => {
                 {item.name}
               </Link>
             ))}
+            {isLoggedIn && user?.role === "admin" && (
+              <Link
+                href="/places/add"
+                className="block px-3 py-2 rounded-md text-base font-medium text-white hover:bg-slate-700"
+              >
+                Add Places
+              </Link>
+            )}
             {isLoggedIn ? (
               <>
                 <Link
@@ -145,7 +162,7 @@ const Header = () => {
                 </Link>
                 <Button
                   onClick={handleLogout}
-                  className="block px-3 py-2 rounded-md text-base font-medium text-white bg-slate-900  hover:bg-slate-700"
+                  className="block px-3 py-2 rounded-md text-base font-medium text-white bg-slate-900 hover:bg-slate-700"
                 >
                   Logout
                 </Button>

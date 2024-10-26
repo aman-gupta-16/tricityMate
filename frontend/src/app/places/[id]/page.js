@@ -5,12 +5,15 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify"; // Assuming you're using react-toastify for notifications
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+
 const PlaceDetails = ({ params }) => {
   const [place, setPlace] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [watchlistIds, setWatchlistIds] = useState([]); // State to track watchlist IDs
-  const [isAdmin, setIsAdmin] = useState(false); // State to track admin status
+  const [watchlistIds, setWatchlistIds] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [rating, setRating] = useState(0);
+  const [comment, setComment] = useState("");
   const router = useRouter();
   const placeId = params.id;
 
@@ -18,23 +21,22 @@ const PlaceDetails = ({ params }) => {
   const { user } = useAuth() || {}; // Retrieve user details using useAuth hook
 
   useEffect(() => {
-    // Check if user is admin
     if (user && user.role === "admin") {
-      setIsAdmin(true); // Set admin status from user details
+      setIsAdmin(true);
     }
 
     const fetchData = async () => {
       setLoading(true);
       try {
-        // Fetch place details
         const placeResponse = await api.get(`/places/${placeId}`);
         setPlace(placeResponse.data);
 
-        // Fetch watchlist status
-        const watchlistResponse = await api.get("/watchlist");
-        const watchlist = watchlistResponse.data;
-        const ids = watchlist.map((item) => item._id); // Adjust according to your response structure
-        setWatchlistIds(ids);
+        if (user) {
+          const watchlistResponse = await api.get("/watchlist");
+          const watchlist = watchlistResponse.data;
+          const ids = watchlist.map((item) => item._id);
+          setWatchlistIds(ids);
+        }
       } catch (err) {
         setError("Error fetching data");
         toast.error("Error fetching place details or watchlist");
@@ -47,7 +49,6 @@ const PlaceDetails = ({ params }) => {
     fetchData();
   }, [placeId, user]);
 
-  // Function to handle adding to the watchlist
   const handleAddToWatchlist = async () => {
     const token = localStorage.getItem("token");
     if (!token) {
@@ -56,9 +57,7 @@ const PlaceDetails = ({ params }) => {
       return;
     }
     try {
-      const response = await api.post("/watchlist/add", {
-        placeId: place._id,
-      });
+      const response = await api.post("/watchlist/add", { placeId: place._id });
 
       if (response.status === 200) {
         toast.success(`${place.name} added to your watchlist!`);
@@ -74,7 +73,6 @@ const PlaceDetails = ({ params }) => {
     }
   };
 
-  // Function to handle removing from the watchlist
   const handleRemoveFromWatchlist = async () => {
     try {
       const response = await api.post("/watchlist/remove", {
@@ -93,7 +91,59 @@ const PlaceDetails = ({ params }) => {
     }
   };
 
-  // Loading and error states
+  const handleReviewSubmit = async () => {
+    const token = localStorage.getItem("token");
+    console.log(token);
+    if (!token) {
+      toast.error("You need to be logged in to submit a review");
+      router.push("/login");
+      return;
+    }
+    try {
+      const response = await api.post("/reviews/add", {
+        placeId: place._id,
+        rating,
+        comment,
+      });
+
+      if (response.status === 200) {
+        toast.success("Review submitted successfully!");
+        setPlace((prevPlace) => ({
+          ...prevPlace,
+          reviews: [...prevPlace.reviews, response.data.review],
+        }));
+        setRating(0);
+        setComment("");
+      } else {
+        throw new Error("Failed to submit review");
+      }
+    } catch (err) {
+      toast.error("Error submitting review");
+      console.error(err);
+    }
+  };
+
+  const renderStarsInput = () => {
+    return (
+      <div className="flex space-x-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <svg
+            key={star}
+            onClick={() => setRating(star)}
+            className={`w-5 h-5 cursor-pointer ${
+              star <= rating ? "text-yellow-500" : "text-gray-300"
+            }`}
+            fill="currentColor"
+            viewBox="0 0 20 20"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            <path d="M10 15.27L16.18 18l-1.64-7.03L20 7.24l-7.19-.61L10 .25 7.19 6.63 0 7.24l5.46 3.73L3.82 18z" />
+          </svg>
+        ))}
+      </div>
+    );
+  };
+
   if (loading) return <p>Loading...</p>;
   if (error) return <p className="text-red-500">{error}</p>;
 
@@ -138,7 +188,7 @@ const PlaceDetails = ({ params }) => {
           Back to List
         </Button>
 
-        {isAdmin && ( // Conditionally render the edit button for admins
+        {isAdmin && (
           <Button
             onClick={() => router.push(`/places/edit/${place._id}`)}
             className="bg-yellow-500 text-white hover:bg-yellow-600"
@@ -146,6 +196,24 @@ const PlaceDetails = ({ params }) => {
             Edit Place
           </Button>
         )}
+      </div>
+
+      {/* Review Section */}
+      <div className="mt-6">
+        <h2 className="text-xl font-semibold">Submit Your Review</h2>
+        <div className="mt-2">{renderStarsInput()}</div>
+        <textarea
+          value={comment}
+          onChange={(e) => setComment(e.target.value)}
+          className="w-full mt-2 p-2 border border-gray-300 rounded-md text-black"
+          placeholder="Write your comment here..."
+        />
+        <Button
+          onClick={handleReviewSubmit}
+          className="mt-2 bg-blue-500 text-white hover:bg-blue-600"
+        >
+          Submit Review
+        </Button>
       </div>
     </div>
   );

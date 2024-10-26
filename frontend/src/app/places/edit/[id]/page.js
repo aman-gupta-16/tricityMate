@@ -146,23 +146,6 @@ const EditPlace = ({ params }) => {
           />
         </div>
 
-        {/* Images */}
-        <div>
-          <label
-            htmlFor="images"
-            className="block text-sm font-medium text-gray-700 dark:text-gray-300"
-          >
-            Images
-          </label>
-          <input
-            type="file"
-            id="images"
-            name="images"
-            multiple
-            className="mt-1 block w-full text-gray-900 bg-gray-50 rounded-lg border border-gray-300 cursor-pointer focus:outline-none dark:bg-gray-800 dark:text-white"
-          />
-        </div>
-
         {/* Submit Button */}
         <Button
           type="submit"

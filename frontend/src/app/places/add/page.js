@@ -72,7 +72,7 @@ const AddPlace = () => {
     try {
       const response = await axios.post(`${PLACES_END_POINT}/add`, data);
       setLoading(false); // End loading
-      router.push("/places");
+      router.push("/");
       toast.success("Place added successfully!"); // Success toast
     } catch (error) {
       setLoading(false); // End loading on error

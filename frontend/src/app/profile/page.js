@@ -11,7 +11,9 @@ import { toast } from "react-toastify";
 const DashboardPage = () => {
   const [userData, setUserData] = useState(null);
   const [places, setPlaces] = useState([]);
+  const [reviews, setReviews] = useState([]); // New state for storing reviews
   const [loading, setLoading] = useState(true);
+  const [reviewLoading, setReviewLoading] = useState(false); // Loading state for reviews
   const [error, setError] = useState(null);
   const { user } = useAuth();
   const router = useRouter();
@@ -22,6 +24,7 @@ const DashboardPage = () => {
       router.replace("/login");
     } else {
       fetchUserData();
+      fetchUserReviews(); // Fetch reviews on component mount
     }
   }, [user, router]);
 
@@ -37,6 +40,21 @@ const DashboardPage = () => {
       console.error("Error fetching user data", error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // New function to fetch user reviews
+  const fetchUserReviews = async () => {
+    setReviewLoading(true);
+    try {
+      const { data: userReviews } = await axios.get(
+        "http://localhost:8000/api/reviews/user"
+      );
+      setReviews(userReviews);
+    } catch (error) {
+      console.error("Error fetching user reviews", error);
+    } finally {
+      setReviewLoading(false);
     }
   };
 
@@ -152,6 +170,46 @@ const DashboardPage = () => {
             </Button>
           </div>
         )}
+
+        {/* User Reviews Section */}
+        <div className="mt-12">
+          <h2 className="text-2xl font-semibold text-gray-100 mb-6">
+            Your Reviews
+          </h2>
+          {reviewLoading ? (
+            <div className="mt-4 text-gray-400 animate-pulse">
+              Loading reviews...
+            </div>
+          ) : reviews.length > 0 ? (
+            <div className="space-y-6">
+              {reviews.map((review) => (
+                <Card
+                  key={review._id}
+                  className="bg-gray-800 p-5 rounded-lg border border-gray-700"
+                >
+                  <div className="flex items-start">
+                    <img
+                      src={review.place.images[0]} // Display the first image in the array
+                      alt={review.place.name}
+                      className="w-16 h-16 object-cover rounded-md mr-4"
+                    />
+                    <div>
+                      <h3 className="text-lg font-semibold text-gray-100">
+                        {review.place.name}
+                      </h3>
+                      <p className="text-gray-400 mt-2">{review.comment}</p>
+                      <div className="mt-3">{renderStars(review.rating)}</div>
+                    </div>
+                  </div>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="text-gray-400">
+              You haven't given any reviews yet.
+            </div>
+          )}
+        </div>
       </div>
     </div>
   );

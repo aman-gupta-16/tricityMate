@@ -43,10 +43,10 @@ export const getUserReviews = async (req, res) => {
   const userId = req.user._id;
 
   try {
-    // Fetch all reviews by the logged-in user
+    // Populate 'place' to include 'name' and 'images' (fetch the first image)
     const reviews = await Review.find({ user: userId }).populate(
       "place",
-      "name"
+      "name images"
     );
     res.json(reviews);
   } catch (error) {
@@ -84,6 +84,22 @@ export const editReview = async (req, res) => {
     const updatedReview = await review.save();
 
     res.status(200).json({ message: "Review updated", updatedReview });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Get all review for places
+
+export const getAllReviewsByPlace = async (req, res) => {
+  const { placeId } = req.params;
+  try {
+    // Find reviews associated with the given placeId and populate user and place
+    const reviews = await Review.find({ place: placeId })
+      // .populate("user", "name") // Populate user with name
+      .populate("place", "name images"); // Populate place with name and images
+
+    res.json(reviews);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

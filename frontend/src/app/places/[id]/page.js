@@ -93,7 +93,6 @@ const PlaceDetails = ({ params }) => {
 
   const handleReviewSubmit = async () => {
     const token = localStorage.getItem("token");
-    console.log(token);
     if (!token) {
       toast.error("You need to be logged in to submit a review");
       router.push("/login");
@@ -106,7 +105,7 @@ const PlaceDetails = ({ params }) => {
         comment,
       });
 
-      if (response.status === 200) {
+      if (response.status === 201) {
         toast.success("Review submitted successfully!");
         setPlace((prevPlace) => ({
           ...prevPlace,
@@ -119,7 +118,6 @@ const PlaceDetails = ({ params }) => {
       }
     } catch (err) {
       toast.error("Error submitting review");
-      console.error(err);
     }
   };
 
@@ -148,72 +146,82 @@ const PlaceDetails = ({ params }) => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-3xl font-bold mb-4">{place.name}</h1>
-      <div className="flex flex-wrap mb-4">
-        {place.images.map((image, index) => (
-          <img
-            key={index}
-            src={image}
-            alt={place.name}
-            className="w-full h-64 object-cover rounded-md mb-2 mr-2"
+    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-950 py-8">
+      <div className="container mx-auto px-4">
+        <h1 className="text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+          {place.name}
+        </h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+          {place.images.map((image, index) => (
+            <img
+              key={index}
+              src={image}
+              alt={place.name}
+              className="w-full h-64 object-cover rounded-md"
+            />
+          ))}
+        </div>
+        <p className="text-gray-300 text-lg mb-4">{place.description}</p>
+        <div className="mt-4">
+          <h2 className="text-xl font-semibold text-gray-100">
+            Average Rating:
+          </h2>
+          <div className="flex items-center space-x-2">
+            {renderStars(place.avgRating)}
+          </div>
+        </div>
+        <div className="flex space-x-4 mt-6">
+          {watchlistIds.includes(place._id) ? (
+            <Button
+              onClick={handleRemoveFromWatchlist}
+              className="bg-red-600 text-white hover:bg-red-700"
+            >
+              Remove from Watchlist
+            </Button>
+          ) : (
+            <Button
+              onClick={handleAddToWatchlist}
+              className="bg-green-600 text-white hover:bg-green-700"
+            >
+              Add to Watchlist
+            </Button>
+          )}
+          <Button
+            onClick={() => router.back()}
+            className="bg-indigo-600 text-white hover:bg-indigo-700"
+          >
+            Back to List
+          </Button>
+          {isAdmin && (
+            <Button
+              onClick={() => router.push(`/places/edit/${place._id}`)}
+              className="bg-yellow-600 text-white hover:bg-yellow-700"
+            >
+              Edit Place
+            </Button>
+          )}
+        </div>
+
+        <div className="mt-8 bg-gray-800 p-6 rounded-lg border border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-100 mb-4">
+            Submit Your Review
+          </h2>
+          <div className="flex items-center space-x-2 mb-4">
+            {renderStarsInput()}
+          </div>
+          <textarea
+            value={comment}
+            onChange={(e) => setComment(e.target.value)}
+            className="w-full bg-gray-700 border border-gray-600 rounded-md text-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            placeholder="Write your comment here..."
           />
-        ))}
-      </div>
-      <p className="text-gray-700">{place.description}</p>
-      <div className="mt-4">
-        <h2 className="text-xl font-semibold">Average Rating:</h2>
-        <div className="flex">{renderStars(place.avgRating)}</div>
-      </div>
-      <div className="flex space-x-4 mt-6">
-        {watchlistIds.includes(place._id) ? (
           <Button
-            onClick={handleRemoveFromWatchlist}
-            className="bg-red-500 text-white hover:bg-red-600"
+            onClick={handleReviewSubmit}
+            className="mt-4 bg-blue-600 text-white hover:bg-blue-700"
           >
-            Remove from Watchlist
+            Submit Review
           </Button>
-        ) : (
-          <Button
-            onClick={handleAddToWatchlist}
-            className="bg-green-500 text-white hover:bg-green-600"
-          >
-            Add to Watchlist
-          </Button>
-        )}
-        <Button
-          onClick={() => router.back()}
-          className="bg-indigo-500 text-white hover:bg-indigo-600"
-        >
-          Back to List
-        </Button>
-
-        {isAdmin && (
-          <Button
-            onClick={() => router.push(`/places/edit/${place._id}`)}
-            className="bg-yellow-500 text-white hover:bg-yellow-600"
-          >
-            Edit Place
-          </Button>
-        )}
-      </div>
-
-      {/* Review Section */}
-      <div className="mt-6">
-        <h2 className="text-xl font-semibold">Submit Your Review</h2>
-        <div className="mt-2">{renderStarsInput()}</div>
-        <textarea
-          value={comment}
-          onChange={(e) => setComment(e.target.value)}
-          className="w-full mt-2 p-2 border border-gray-300 rounded-md text-black"
-          placeholder="Write your comment here..."
-        />
-        <Button
-          onClick={handleReviewSubmit}
-          className="mt-2 bg-blue-500 text-white hover:bg-blue-600"
-        >
-          Submit Review
-        </Button>
+        </div>
       </div>
     </div>
   );

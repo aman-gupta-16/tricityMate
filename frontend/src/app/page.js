@@ -1,10 +1,9 @@
 "use client";
 import { useEffect, useState } from "react";
-import axios from "@/utils/api";
-import { PLACES_END_POINT } from "@/lib/constant";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useRouter } from "next/navigation";
+import api from "@/utils/api";
 
 const HomePage = () => {
   const [places, setPlaces] = useState([]);
@@ -13,7 +12,7 @@ const HomePage = () => {
   useEffect(() => {
     const fetchPlaces = async () => {
       try {
-        const response = await axios.get(PLACES_END_POINT);
+        const response = await api.get("/places");
         setPlaces(response.data);
       } catch (error) {
         console.error("Error fetching places:", error);
@@ -88,7 +87,7 @@ const HomePage = () => {
 
                   <div className="flex items-center justify-between">
                     <div className="flex items-center space-x-1">
-                      {renderStars(place.avgRating)}
+                      {renderStars(place.averageRating)} {place.averageRating}
                     </div>
                   </div>
 

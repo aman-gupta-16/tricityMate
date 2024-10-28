@@ -3,6 +3,7 @@ import {
   addReview,
   getUserReviews,
   editReview,
+  getAllReviewsByPlace,
 } from "../controllers/reviewController.js";
 import { protect } from "../middleware/authMiddleware.js"; // Middleware to protect routes
 
@@ -12,5 +13,6 @@ const router = express.Router();
 router.post("/add", protect, addReview);
 router.get("/user", protect, getUserReviews); // New route for fetching the user's reviews
 router.put("/edit/:reviewId", protect, editReview);
+router.get("/:plceId", getAllReviewsByPlace);
 
 export default router;

@@ -3,7 +3,7 @@ import User from "../models/userModel.js";
 
 // Generate a JWT token
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "1d" });
 };
 
 // Register a new user
@@ -62,8 +62,6 @@ export const loginUser = async (req, res) => {
     res.status(400).json({ message: "Error in login", error: error.message });
   }
 };
-
-//Logout
 
 // Get user profile - Protected route
 export const getUserProfile = async (req, res) => {

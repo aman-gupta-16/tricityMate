@@ -24,15 +24,29 @@ export const addReview = async (req, res) => {
     place.reviews.push(review._id);
 
     // Update average rating and number of reviews
-    const reviews = await Review.find({ place: placeId });
-    const avgRating =
-      reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length;
+    const reviews = await Review.find({ place: placeId }).populate(
+      "user",
+      "name"
+    );
 
+    const avgRating =
+      reviews.length > 0
+        ? (
+            reviews.reduce((sum, review) => sum + review.rating, 0) /
+            reviews.length
+          ).toFixed(1)
+        : 0;
     place.averageRating = avgRating;
 
     await place.save();
 
-    res.status(201).json({ message: "Review added", review });
+    // Populate user details for the new review before sending the response
+    const populatedReview = await Review.findById(review._id).populate(
+      "user",
+      "name"
+    );
+
+    res.status(201).json({ message: "Review added", review: populatedReview });
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
@@ -94,12 +108,17 @@ export const editReview = async (req, res) => {
 export const getAllReviewsByPlace = async (req, res) => {
   const { placeId } = req.params;
   try {
-    // Find reviews associated with the given placeId and populate user and place
-    const reviews = await Review.find({ place: placeId })
-      // .populate("user", "name") // Populate user with name
-      .populate("place", "name images"); // Populate place with name and images
+    // Find the place by ID and populate the reviews field
+    const placeWithReviews = await Place.findById(placeId).populate({
+      path: "reviews",
+      populate: { path: "user", select: "name" }, // Populate user details in each review
+    });
 
-    res.json(reviews);
+    if (!placeWithReviews) {
+      return res.status(404).json({ message: "Place not found" });
+    }
+
+    res.json(placeWithReviews.reviews); // Send only the reviews array
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

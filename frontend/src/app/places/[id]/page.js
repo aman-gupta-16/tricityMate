@@ -11,6 +11,7 @@ const PlaceDetails = ({ params }) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [watchlistIds, setWatchlistIds] = useState([]);
+  const [reviews, setReviews] = useState([]);
   const [isAdmin, setIsAdmin] = useState(false);
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState("");
@@ -28,18 +29,24 @@ const PlaceDetails = ({ params }) => {
     const fetchData = async () => {
       setLoading(true);
       try {
+        // Fetch place details
         const placeResponse = await api.get(`/places/${placeId}`);
         setPlace(placeResponse.data);
 
+        // Fetch watchlist if user is logged in
         if (user) {
           const watchlistResponse = await api.get("/watchlist");
           const watchlist = watchlistResponse.data;
           const ids = watchlist.map((item) => item._id);
           setWatchlistIds(ids);
         }
+
+        // Fetch reviews for the place
+        const reviewsResponse = await api.get(`/reviews/${placeId}`);
+        setReviews(reviewsResponse.data); // Assumes you have a setReviews state function
       } catch (err) {
         setError("Error fetching data");
-        toast.error("Error fetching place details or watchlist");
+        toast.error("Error fetching place details, watchlist, or reviews");
         console.error(err);
       } finally {
         setLoading(false);
@@ -111,6 +118,8 @@ const PlaceDetails = ({ params }) => {
           ...prevPlace,
           reviews: [...prevPlace.reviews, response.data.review],
         }));
+        setReviews((prevReviews) => [...prevReviews, response.data.review]);
+
         setRating(0);
         setComment("");
       } else {
@@ -162,14 +171,37 @@ const PlaceDetails = ({ params }) => {
           ))}
         </div>
         <p className="text-gray-300 text-lg mb-4">{place.description}</p>
+        <div className="mt-6 bg-gray-800 p-4 rounded-lg border border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-100 mb-2">Details</h2>
+          <p className="text-gray-300 mb-2">
+            <strong>Location:</strong> {place.location}
+          </p>
+          <p className="text-gray-300 mb-2">
+            <strong>Category:</strong> {place.category}
+          </p>
+          <p className="text-gray-300 mb-2">
+            <strong>Entry Fee:</strong> ₹{place.entryFee}
+          </p>
+          <p className="text-gray-300 mb-2">
+            <strong>Opening Hours:</strong> {place.openingHours}
+          </p>
+          <p className="text-gray-300 mb-2">
+            <strong>Closing Hours:</strong> {place.closingHours}
+          </p>
+          <p className="text-gray-300 mb-2">
+            <strong>Days of Operation:</strong> {place.daysOfOperation}
+          </p>
+        </div>
         <div className="mt-4">
           <h2 className="text-xl font-semibold text-gray-100">
             Average Rating:
           </h2>
           <div className="flex items-center space-x-2">
-            {renderStars(place.avgRating)}
+            {renderStars(place.averageRating)} {place.averageRating}
           </div>
         </div>
+
+        {/* watchlist */}
         <div className="flex space-x-4 mt-6">
           {watchlistIds.includes(place._id) ? (
             <Button
@@ -187,7 +219,7 @@ const PlaceDetails = ({ params }) => {
             </Button>
           )}
           <Button
-            onClick={() => router.back()}
+            onClick={() => router.push("/")}
             className="bg-indigo-600 text-white hover:bg-indigo-700"
           >
             Back to List
@@ -202,6 +234,7 @@ const PlaceDetails = ({ params }) => {
           )}
         </div>
 
+        {/* submit review */}
         <div className="mt-8 bg-gray-800 p-6 rounded-lg border border-gray-700">
           <h2 className="text-xl font-semibold text-gray-100 mb-4">
             Submit Your Review
@@ -221,6 +254,31 @@ const PlaceDetails = ({ params }) => {
           >
             Submit Review
           </Button>
+        </div>
+
+        {/* Display Reviews */}
+        <div className="mt-8 bg-gray-800 p-6 rounded-lg border border-gray-700">
+          <h2 className="text-xl font-semibold text-gray-100 mb-4">Reviews</h2>
+          {reviews.length > 0 ? (
+            reviews.map((review) => (
+              <div key={review._id} className="mb-6 p-4 bg-gray-700 rounded-lg">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-lg font-semibold text-gray-300">
+                    {review.user.name}
+                  </h3>
+                  <div className="flex items-center">
+                    {renderStars(review.rating)}
+                    <span className="ml-2 text-gray-400">{review.rating}</span>
+                  </div>
+                </div>
+                <p className="text-gray-400">{review.comment}</p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-400">
+              No reviews yet. Be the first to leave one!
+            </p>
+          )}
         </div>
       </div>
     </div>

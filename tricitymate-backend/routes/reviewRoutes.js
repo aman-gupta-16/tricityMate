@@ -13,6 +13,6 @@ const router = express.Router();
 router.post("/add", protect, addReview);
 router.get("/user", protect, getUserReviews); // New route for fetching the user's reviews
 router.put("/edit/:reviewId", protect, editReview);
-router.get("/:plceId", getAllReviewsByPlace);
+router.get("/:placeId", getAllReviewsByPlace);
 
 export default router;

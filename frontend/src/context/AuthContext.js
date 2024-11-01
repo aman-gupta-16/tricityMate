@@ -1,39 +1,53 @@
 "use client";
+import MountedLoading from "@/components/Loader";
 import React, { createContext, useContext, useEffect, useState } from "react";
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    return storedUser || null; // Default to null if not found
-  });
+  const initialUser =
+    typeof window !== "undefined"
+      ? JSON.parse(localStorage.getItem("user"))
+      : null;
+  const initialIsLoggedIn =
+    typeof window !== "undefined" ? !!localStorage.getItem("token") : false;
 
-  const token = localStorage.getItem("token");
-  const [isLoggedIn, setIsLoggedIn] = useState(!!token);
+  const [user, setUser] = useState(initialUser);
+  const [isLoggedIn, setIsLoggedIn] = useState(initialIsLoggedIn);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
-    if (user && token) {
-      setIsLoggedIn(true);
-    } else {
-      setIsLoggedIn(false);
+    if (typeof window !== "undefined") {
+      const storedUser = JSON.parse(localStorage.getItem("user"));
+      const token = localStorage.getItem("token");
+
+      setUser(storedUser || null);
+      setIsLoggedIn(!!token);
     }
-  }, [user, token]);
+    setIsMounted(true); // Set mounted to true when the component has mounted
+  }, []);
 
   const login = (userDetails) => {
-    localStorage.setItem("token", userDetails.token); // Store token
-    localStorage.setItem("user", JSON.stringify(userDetails)); // Store user as string
+    if (typeof window !== "undefined") {
+      localStorage.setItem("token", userDetails.token);
+      localStorage.setItem("user", JSON.stringify(userDetails));
+    }
     setUser(userDetails);
     setIsLoggedIn(true);
   };
 
   const logout = () => {
-    localStorage.removeItem("token");
-    localStorage.removeItem("user"); // Clear user data
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+    }
     setUser(null);
     setIsLoggedIn(false);
   };
-
+  if (!isMounted) {
+    // Show a placeholder component while loading
+    return <MountedLoading />;
+  }
   return (
     <AuthContext.Provider value={{ user, isLoggedIn, login, logout }}>
       {children}

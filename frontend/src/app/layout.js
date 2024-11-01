@@ -3,6 +3,7 @@ import "./globals.css";
 import { AuthProvider } from "@/context/AuthContext.js";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Footer from "@/components/Footer";
 
 export const metadata = {
   title: "TricityMate",
@@ -14,8 +15,9 @@ export default function RootLayout({ children }) {
     <html lang="en" className="dark">
       <body>
         <AuthProvider>
-          <Header />
+          {/* <Header /> */}
           {children}
+          <Footer />
           <ToastContainer />
         </AuthProvider>
       </body>

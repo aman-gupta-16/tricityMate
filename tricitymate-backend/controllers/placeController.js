@@ -179,3 +179,16 @@ export const editPlace = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
+
+export const placeSearch = async (req, res) => {
+  const query = req.query.q || ""; // Capture the search query parameter `q` from the URL
+  // console.log("Query Parameter:", query);
+  // console.log("Full Query Object:", req.query);
+  try {
+    const places = await Place.find({ name: { $regex: query, $options: "i" } });
+    res.status(200).json({ message: "places found", places });
+  } catch (error) {
+    console.error("Error performing search:", error);
+    res.status(500).json({ error: "Server error during search" });
+  }
+};

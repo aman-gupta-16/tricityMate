@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "react-toastify"; // Assuming you're using react-toastify for notifications
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/context/AuthContext";
+import Header from "@/components/Header";
 
 const PlaceDetails = ({ params }) => {
   const [place, setPlace] = useState(null);
@@ -155,133 +156,145 @@ const PlaceDetails = ({ params }) => {
   if (error) return <p className="text-red-500">{error}</p>;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-950 py-8">
-      <div className="container mx-auto px-4">
-        <h1 className="text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
-          {place.name}
-        </h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {place.images.map((image, index) => (
-            <img
-              key={index}
-              src={image}
-              alt={place.name}
-              className="w-full h-64 object-cover rounded-md"
-            />
-          ))}
-        </div>
-        <p className="text-gray-300 text-lg mb-4">{place.description}</p>
-        <div className="mt-6 bg-gray-800 p-4 rounded-lg border border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-100 mb-2">Details</h2>
-          <p className="text-gray-300 mb-2">
-            <strong>Location:</strong> {place.location}
-          </p>
-          <p className="text-gray-300 mb-2">
-            <strong>Category:</strong> {place.category}
-          </p>
-          <p className="text-gray-300 mb-2">
-            <strong>Entry Fee:</strong> ₹{place.entryFee}
-          </p>
-          <p className="text-gray-300 mb-2">
-            <strong>Opening Hours:</strong> {place.openingHours}
-          </p>
-          <p className="text-gray-300 mb-2">
-            <strong>Closing Hours:</strong> {place.closingHours}
-          </p>
-          <p className="text-gray-300 mb-2">
-            <strong>Days of Operation:</strong> {place.daysOfOperation}
-          </p>
-        </div>
-        <div className="mt-4">
-          <h2 className="text-xl font-semibold text-gray-100">
-            Average Rating:
-          </h2>
-          <div className="flex items-center space-x-2">
-            {renderStars(place.averageRating)} {place.averageRating}
+    <>
+      <Header />
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-950 py-8">
+        <div className="container mx-auto px-4">
+          <h1 className="text-4xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+            {place.name}
+          </h1>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+            {place.images.map((image, index) => (
+              <img
+                key={index}
+                src={image}
+                alt={place.name}
+                className="w-full h-64 object-cover rounded-md"
+              />
+            ))}
           </div>
-        </div>
-
-        {/* watchlist */}
-        <div className="flex space-x-4 mt-6">
-          {watchlistIds.includes(place._id) ? (
-            <Button
-              onClick={handleRemoveFromWatchlist}
-              className="bg-red-600 text-white hover:bg-red-700"
-            >
-              Remove from Watchlist
-            </Button>
-          ) : (
-            <Button
-              onClick={handleAddToWatchlist}
-              className="bg-green-600 text-white hover:bg-green-700"
-            >
-              Add to Watchlist
-            </Button>
-          )}
-          <Button
-            onClick={() => router.push("/")}
-            className="bg-indigo-600 text-white hover:bg-indigo-700"
-          >
-            Back to List
-          </Button>
-          {isAdmin && (
-            <Button
-              onClick={() => router.push(`/places/edit/${place._id}`)}
-              className="bg-yellow-600 text-white hover:bg-yellow-700"
-            >
-              Edit Place
-            </Button>
-          )}
-        </div>
-
-        {/* submit review */}
-        <div className="mt-8 bg-gray-800 p-6 rounded-lg border border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-100 mb-4">
-            Submit Your Review
-          </h2>
-          <div className="flex items-center space-x-2 mb-4">
-            {renderStarsInput()}
-          </div>
-          <textarea
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            className="w-full bg-gray-700 border border-gray-600 rounded-md text-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            placeholder="Write your comment here..."
-          />
-          <Button
-            onClick={handleReviewSubmit}
-            className="mt-4 bg-blue-600 text-white hover:bg-blue-700"
-          >
-            Submit Review
-          </Button>
-        </div>
-
-        {/* Display Reviews */}
-        <div className="mt-8 bg-gray-800 p-6 rounded-lg border border-gray-700">
-          <h2 className="text-xl font-semibold text-gray-100 mb-4">Reviews</h2>
-          {reviews.length > 0 ? (
-            reviews.map((review) => (
-              <div key={review._id} className="mb-6 p-4 bg-gray-700 rounded-lg">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-300">
-                    {review.user.name}
-                  </h3>
-                  <div className="flex items-center">
-                    {renderStars(review.rating)}
-                    <span className="ml-2 text-gray-400">{review.rating}</span>
-                  </div>
-                </div>
-                <p className="text-gray-400">{review.comment}</p>
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-400">
-              No reviews yet. Be the first to leave one!
+          <p className="text-gray-300 text-lg mb-4">{place.description}</p>
+          <div className="mt-6 bg-gray-800 p-4 rounded-lg border border-gray-700">
+            <h2 className="text-xl font-semibold text-gray-100 mb-2">
+              Details
+            </h2>
+            <p className="text-gray-300 mb-2">
+              <strong>Location:</strong> {place.location}
             </p>
-          )}
+            <p className="text-gray-300 mb-2">
+              <strong>Category:</strong> {place.category}
+            </p>
+            <p className="text-gray-300 mb-2">
+              <strong>Entry Fee:</strong> ₹{place.entryFee}
+            </p>
+            <p className="text-gray-300 mb-2">
+              <strong>Opening Hours:</strong> {place.openingHours}
+            </p>
+            <p className="text-gray-300 mb-2">
+              <strong>Closing Hours:</strong> {place.closingHours}
+            </p>
+            <p className="text-gray-300 mb-2">
+              <strong>Days of Operation:</strong> {place.daysOfOperation}
+            </p>
+          </div>
+          <div className="mt-4">
+            <h2 className="text-xl font-semibold text-gray-100">
+              Average Rating:
+            </h2>
+            <div className="flex items-center space-x-2">
+              {renderStars(place.averageRating)} {place.averageRating}
+            </div>
+          </div>
+
+          {/* watchlist */}
+          <div className="flex space-x-4 mt-6">
+            {watchlistIds.includes(place._id) ? (
+              <Button
+                onClick={handleRemoveFromWatchlist}
+                className="bg-red-600 text-white hover:bg-red-700"
+              >
+                Remove from Watchlist
+              </Button>
+            ) : (
+              <Button
+                onClick={handleAddToWatchlist}
+                className="bg-green-600 text-white hover:bg-green-700"
+              >
+                Add to Watchlist
+              </Button>
+            )}
+            <Button
+              onClick={() => router.push("/")}
+              className="bg-indigo-600 text-white hover:bg-indigo-700"
+            >
+              Back to List
+            </Button>
+            {isAdmin && (
+              <Button
+                onClick={() => router.push(`/places/edit/${place._id}`)}
+                className="bg-yellow-600 text-white hover:bg-yellow-700"
+              >
+                Edit Place
+              </Button>
+            )}
+          </div>
+
+          {/* submit review */}
+          <div className="mt-8 bg-gray-800 p-6 rounded-lg border border-gray-700">
+            <h2 className="text-xl font-semibold text-gray-100 mb-4">
+              Submit Your Review
+            </h2>
+            <div className="flex items-center space-x-2 mb-4">
+              {renderStarsInput()}
+            </div>
+            <textarea
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              className="w-full bg-gray-700 border border-gray-600 rounded-md text-gray-300 p-2 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              placeholder="Write your comment here..."
+            />
+            <Button
+              onClick={handleReviewSubmit}
+              className="mt-4 bg-blue-600 text-white hover:bg-blue-700"
+            >
+              Submit Review
+            </Button>
+          </div>
+
+          {/* Display Reviews */}
+          <div className="mt-8 bg-gray-800 p-6 rounded-lg border border-gray-700">
+            <h2 className="text-xl font-semibold text-gray-100 mb-4">
+              Reviews
+            </h2>
+            {reviews.length > 0 ? (
+              reviews.map((review) => (
+                <div
+                  key={review._id}
+                  className="mb-6 p-4 bg-gray-700 rounded-lg"
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <h3 className="text-lg font-semibold text-gray-300">
+                      {review.user.name}
+                    </h3>
+                    <div className="flex items-center">
+                      {renderStars(review.rating)}
+                      <span className="ml-2 text-gray-400">
+                        {review.rating}
+                      </span>
+                    </div>
+                  </div>
+                  <p className="text-gray-400">{review.comment}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-gray-400">
+                No reviews yet. Be the first to leave one!
+              </p>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

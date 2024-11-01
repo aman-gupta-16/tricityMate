@@ -16,6 +16,7 @@ import {
 import { PLACES_END_POINT } from "@/lib/constant";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import Header from "@/components/Header";
 
 const AddPlace = () => {
   const router = useRouter();
@@ -81,131 +82,168 @@ const AddPlace = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto mt-10">
-      <Card>
-        <CardHeader>
-          <CardTitle className="text-2xl font-bold">Add a New Place</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit}>
-            <div className="space-y-4">
-              <div>
-                <Label htmlFor="name">Name</Label>
-                <Input
-                  type="text"
-                  name="name"
-                  id="name"
-                  value={formData.name}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+    <>
+      <Header />
+      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-950 py-8">
+        <div className="max-w-xl mx-auto mt-10">
+          <Card className="bg-gray-800 border-gray-700 overflow-hidden rounded-lg shadow-lg hover:shadow-2xl transition-all duration-300 hover:transform hover:scale-105">
+            <CardHeader>
+              <CardTitle className="text-2xl font-bold text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-400">
+                Add a New Place
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit}>
+                <div className="space-y-4">
+                  <div>
+                    <Label htmlFor="name" className="text-gray-100">
+                      Name
+                    </Label>
+                    <Input
+                      type="text"
+                      name="name"
+                      id="name"
+                      value={formData.name}
+                      onChange={handleChange}
+                      required
+                      className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-gray-700 text-gray-100"
+                    />
+                  </div>
 
-              <div>
-                <Label htmlFor="description">Description</Label>
-                <Textarea
-                  name="description"
-                  id="description"
-                  value={formData.description}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+                  <div>
+                    <Label htmlFor="description" className="text-gray-100">
+                      Description
+                    </Label>
+                    <Textarea
+                      name="description"
+                      id="description"
+                      value={formData.description}
+                      onChange={handleChange}
+                      required
+                      className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-gray-700 text-gray-100"
+                    />
+                  </div>
 
-              <div>
-                <Label htmlFor="category">Category</Label>
-                <Input
-                  type="text"
-                  name="category"
-                  id="category"
-                  value={formData.category}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+                  <div>
+                    <Label htmlFor="category" className="text-gray-100">
+                      Category
+                    </Label>
+                    <Input
+                      type="text"
+                      name="category"
+                      id="category"
+                      value={formData.category}
+                      onChange={handleChange}
+                      required
+                      className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-gray-700 text-gray-100"
+                    />
+                  </div>
 
-              <div>
-                <Label htmlFor="location">Location</Label>
-                <Input
-                  type="text"
-                  name="location"
-                  id="location"
-                  value={formData.location}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+                  <div>
+                    <Label htmlFor="location" className="text-gray-100">
+                      Location
+                    </Label>
+                    <Input
+                      type="text"
+                      name="location"
+                      id="location"
+                      value={formData.location}
+                      onChange={handleChange}
+                      required
+                      className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-gray-700 text-gray-100"
+                    />
+                  </div>
 
-              <div>
-                <Label htmlFor="entryFee">Entry Fee</Label>
-                <Input
-                  type="text"
-                  name="entryFee"
-                  id="entryFee"
-                  value={formData.entryFee}
-                  onChange={handleChange}
-                />
-              </div>
+                  <div>
+                    <Label htmlFor="entryFee" className="text-gray-100">
+                      Entry Fee
+                    </Label>
+                    <Input
+                      type="text"
+                      name="entryFee"
+                      id="entryFee"
+                      value={formData.entryFee}
+                      onChange={handleChange}
+                      className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-gray-700 text-gray-100"
+                    />
+                  </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label htmlFor="openingHours">Opening Hours</Label>
-                  <Input
-                    type="text"
-                    name="openingHours"
-                    id="openingHours"
-                    value={formData.openingHours}
-                    onChange={handleChange}
-                    required
-                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="openingHours" className="text-gray-100">
+                        Opening Hours
+                      </Label>
+                      <Input
+                        type="text"
+                        name="openingHours"
+                        id="openingHours"
+                        value={formData.openingHours}
+                        onChange={handleChange}
+                        required
+                        className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-gray-700 text-gray-100"
+                      />
+                    </div>
+                    <div>
+                      <Label htmlFor="closingHours" className="text-gray-100">
+                        Closing Hours
+                      </Label>
+                      <Input
+                        type="text"
+                        name="closingHours"
+                        id="closingHours"
+                        value={formData.closingHours}
+                        onChange={handleChange}
+                        required
+                        className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-gray-700 text-gray-100"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="daysOfOperation" className="text-gray-100">
+                      Days of Operation
+                    </Label>
+                    <Input
+                      type="text"
+                      name="daysOfOperation"
+                      id="daysOfOperation"
+                      value={formData.daysOfOperation}
+                      onChange={handleChange}
+                      required
+                      className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-gray-700 text-gray-100"
+                    />
+                  </div>
+
+                  <div>
+                    <Label htmlFor="files" className="text-gray-100">
+                      Upload Images
+                    </Label>
+                    <Input
+                      type="file"
+                      name="files"
+                      id="files"
+                      onChange={handleFileChange}
+                      accept="image/*"
+                      multiple
+                      className="mt-1 block w-full px-3 py-2 border border-gray-600 rounded-md shadow-sm focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 bg-gray-700 text-gray-100"
+                    />
+                  </div>
                 </div>
-                <div>
-                  <Label htmlFor="closingHours">Closing Hours</Label>
-                  <Input
-                    type="text"
-                    name="closingHours"
-                    id="closingHours"
-                    value={formData.closingHours}
-                    onChange={handleChange}
-                    required
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label htmlFor="daysOfOperation">Days of Operation</Label>
-                <Input
-                  type="text"
-                  name="daysOfOperation"
-                  id="daysOfOperation"
-                  value={formData.daysOfOperation}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div>
-                <Label htmlFor="files">Upload Images</Label>
-                <Input
-                  type="file"
-                  name="files"
-                  id="files"
-                  onChange={handleFileChange}
-                  accept="image/*"
-                  multiple // Allow multiple file selection
-                />
-              </div>
-            </div>
-          </form>
-        </CardContent>
-        <CardFooter className="flex justify-end">
-          <Button onClick={handleSubmit} disabled={loading}>
-            {loading ? "Adding Place..." : "Add Place"}{" "}
-            {/* Button text changes based on loading state */}
-          </Button>
-        </CardFooter>
-      </Card>
-    </div>
+              </form>
+            </CardContent>
+            <CardFooter className="flex justify-end">
+              <Button
+                onClick={handleSubmit}
+                disabled={loading}
+                className="w-full bg-blue-600 text-white hover:bg-blue-700 transition-colors duration-200"
+              >
+                {loading ? "Adding Place..." : "Add Place"}
+              </Button>
+            </CardFooter>
+          </Card>
+        </div>
+      </div>
+    </>
   );
 };
 

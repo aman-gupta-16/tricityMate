@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Search, Menu, X, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -14,9 +14,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useAuth } from "@/context/AuthContext"; // Import the useAuth hook
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
-const Header = () => {
+const Header = ({ setSearchResults, searchResults }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [searchTriggered, setSearchTriggered] = useState(false);
+
   const { user, isLoggedIn, logout } = useAuth();
   const router = useRouter();
 
@@ -24,6 +28,24 @@ const Header = () => {
     logout(); // Call the logout function from context
     router.push("/");
   };
+
+  const handleSearch = async () => {
+    try {
+      const response = await axios.get(
+        `http://localhost:8000/api/places/search?q=${searchQuery}`
+      );
+      setSearchTriggered(false);
+      setSearchResults(response.data); // Pass search results to parent component or state
+    } catch (error) {
+      console.error("Error fetching search results:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (searchTriggered) {
+      handleSearch();
+    }
+  }, [searchTriggered]);
 
   const navItems = [
     { name: "Home", href: "/" },
@@ -70,9 +92,23 @@ const Header = () => {
           {/* Search Bar - Always visible */}
           <div className="flex-grow max-w-xs sm:max-w-md mx-4">
             <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400" />
+              <Search
+                className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 cursor-pointer"
+                onClick={() => {
+                  setSearchTriggered(true); // Set trigger to true on button click
+                }}
+              ></Search>
+
               <Input
                 type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    e.preventDefault(); // Prevent default form submission
+                    setSearchTriggered(true); // Set trigger to true
+                  }
+                }}
                 placeholder="Search..."
                 className="pl-10 w-full bg-slate-800 text-white border-slate-700 rounded-full focus:ring-2 focus:ring-slate-500"
               />

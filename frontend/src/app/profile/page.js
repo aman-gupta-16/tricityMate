@@ -49,7 +49,7 @@ const DashboardPage = () => {
     setReviewLoading(true);
     try {
       const { data: userReviews } = await axios.get(
-        "http://localhost:8000/api/reviews/user"
+        "https://tricitymate-backend-g6gc.onrender.com/api/reviews/user"
       );
       setReviews(userReviews);
     } catch (error) {

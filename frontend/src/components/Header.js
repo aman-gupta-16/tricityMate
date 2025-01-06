@@ -32,7 +32,7 @@ const Header = ({ setSearchResults, searchResults }) => {
   const handleSearch = async () => {
     try {
       const response = await axios.get(
-        `http://localhost:8000/api/places/search?q=${searchQuery}`
+        `https://tricitymate-backend-g6gc.onrender.com/api/places/search?q=${searchQuery}`
       );
       setSearchTriggered(false);
       setSearchResults(response.data); // Pass search results to parent component or state
